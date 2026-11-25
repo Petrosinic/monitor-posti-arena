@@ -684,7 +684,12 @@ def run_cycle(shop: Shop, cfg: dict, state: dict, tg: Telegram, first_run: bool)
                     changes.append((zone, avail, before))
                 elif cfg.get("notify_on_gone"):
                     changes.append((zone, 0, before))
-            elif avail > 0 and cfg.get("repeat_minutes", 0) > 0:
+            elif avail > 0 and cfg.get("repeat_minutes", 0) > 0 and last_notified > 0:
+                # last_notified > 0 e' indispensabile: un promemoria ripete un avviso,
+                # quindi un avviso ci deve essere stato. Senza questa condizione una
+                # zona gia' disponibile alla prima lettura (che non genera avvisi) ha
+                # last_notified a 0, e "adesso - 0" supera qualunque intervallo: il
+                # promemoria partiva al secondo controllo invece che dopo N minuti.
                 if now_ts - last_notified >= cfg["repeat_minutes"] * 60:
                     reminders.append((zone, avail, before))
 
