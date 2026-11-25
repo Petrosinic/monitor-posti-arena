@@ -2,62 +2,122 @@
   "zones": {
     "13134434|PLATEA A": {
       "avail": 0,
-      "seen_at": 1795643629.8162143,
+      "seen_at": 1795644225.5438044,
       "notified_at": 0.0
     },
     "13134434|PLATEA B": {
       "avail": 0,
-      "seen_at": 1795643629.8162143,
+      "seen_at": 1795644225.5438044,
       "notified_at": 0.0
     },
     "13134436|PLATEA B": {
       "avail": 1,
-      "seen_at": 1795643629.8162143,
+      "seen_at": 1795644225.5438044,
       "notified_at": 0.0
     },
     "13134436|PLATEA A": {
       "avail": 0,
-      "seen_at": 1795643629.8162143,
+      "seen_at": 1795644225.5438044,
       "notified_at": 0.0
     },
     "13134437|PLATEA A": {
       "avail": 0,
-      "seen_at": 1795643629.8162143,
+      "seen_at": 1795644225.5438044,
       "notified_at": 0.0
     },
     "13134437|PLATEA B": {
       "avail": 0,
-      "seen_at": 1795643629.8162143,
+      "seen_at": 1795644225.5438044,
       "notified_at": 0.0
     },
     "13862042|PLATEA A": {
       "avail": 0,
-      "seen_at": 1795643629.8162143,
+      "seen_at": 1795644225.5438044,
       "notified_at": 0.0
     },
     "13862042|PLATEA B": {
       "avail": 0,
-      "seen_at": 1795643629.8162143,
+      "seen_at": 1795644225.5438044,
       "notified_at": 0.0
     },
     "13134435|PLATEA A": {
       "avail": 0,
-      "seen_at": 1795643629.8162143,
+      "seen_at": 1795644225.5438044,
       "notified_at": 0.0
     },
     "13134435|PLATEA B": {
       "avail": 0,
-      "seen_at": 1795643629.8162143,
+      "seen_at": 1795644225.5438044,
       "notified_at": 0.0
     },
     "13862043|PLATEA A": {
       "avail": 70,
-      "seen_at": 1795643629.8162143,
+      "seen_at": 1795644225.5438044,
       "notified_at": 0.0
     },
     "13862043|PLATEA B": {
       "avail": 109,
-      "seen_at": 1795643629.8162143,
+      "seen_at": 1795644225.5438044,
+      "notified_at": 0.0
+    },
+    "13134434|PALCHI": {
+      "avail": 0,
+      "seen_at": 1795644225.5438044,
+      "notified_at": 0.0
+    },
+    "13134434|BALCONATA": {
+      "avail": 0,
+      "seen_at": 1795644225.5438044,
+      "notified_at": 0.0
+    },
+    "13134436|PALCHI": {
+      "avail": 0,
+      "seen_at": 1795644225.5438044,
+      "notified_at": 0.0
+    },
+    "13134436|BALCONATA": {
+      "avail": 0,
+      "seen_at": 1795644225.5438044,
+      "notified_at": 0.0
+    },
+    "13134437|PALCHI": {
+      "avail": 0,
+      "seen_at": 1795644225.5438044,
+      "notified_at": 0.0
+    },
+    "13134437|BALCONATA": {
+      "avail": 0,
+      "seen_at": 1795644225.5438044,
+      "notified_at": 0.0
+    },
+    "13862042|PALCHI": {
+      "avail": 0,
+      "seen_at": 1795644225.5438044,
+      "notified_at": 0.0
+    },
+    "13862042|BALCONATA": {
+      "avail": 0,
+      "seen_at": 1795644225.5438044,
+      "notified_at": 0.0
+    },
+    "13134435|PALCHI": {
+      "avail": 0,
+      "seen_at": 1795644225.5438044,
+      "notified_at": 0.0
+    },
+    "13134435|BALCONATA": {
+      "avail": 0,
+      "seen_at": 1795644225.5438044,
+      "notified_at": 0.0
+    },
+    "13862043|BALCONATA": {
+      "avail": 1,
+      "seen_at": 1795644225.5438044,
+      "notified_at": 0.0
+    },
+    "13862043|PALCHI": {
+      "avail": 0,
+      "seen_at": 1795644225.5438044,
       "notified_at": 0.0
     }
   },

@@ -81,26 +81,50 @@ python monitor_arena.py watch
 
 ## 4. Quando ti scrive (e quando no)
 
-* ✅ **Posti liberi** — una zona sorvegliata passa da 0 a >0, o il numero
-  aumenta. Il messaggio dice zona, quantità, valore precedente e ha il link
-  diretto all'acquisto.
+**Regola unica: un messaggio arriva solo se fra un controllo e il precedente
+qualcosa è cambiato in una zona sorvegliata.** Niente promemoria, niente
+riepiloghi periodici, niente conferme che è vivo. Silenzio = nulla è cambiato.
+
+* 🎟 **Posti liberi** — una zona sorvegliata passa da 0 a >0, oppure il numero
+  cambia. Il messaggio dice giorno, ora, zona, quantità, il valore precedente,
+  e ha il link alla pagina dei biglietti.
 * ⚠️ Se i posti liberi sono **meno di 2** (`min_seats`) il messaggio arriva
-  comunque, ma marcato: utile perché spesso i posti si liberano uno alla volta.
-* ❌ **Posti spariti** — tornano a 0 perché li ha presi qualcun altro. Serve a
-  capire con che velocità girano. Si disattiva con `"notify_on_gone": false`.
-* 🎟 **Promemoria** — se i posti restano liberi, te lo ricorda ogni 45 minuti
-  (`repeat_minutes`), per non perdere l'occasione se non hai visto la notifica.
-* 🟢 **Monitor attivo** — riepilogo silenzioso all'avvio e poi ogni 12 ore, così
-  sai che il programma sta girando davvero e non è morto in silenzio.
-* ⚠️ **Monitor in difficoltà** — se tre cicli di fila vanno in errore.
+  comunque, marcato *«per 2 biglietti non basta»*: spesso i posti si liberano
+  uno alla volta, e il secondo può arrivare poco dopo.
+* ❌ **Posti esauriti di nuovo** — tornano a 0 perché li ha presi qualcun altro.
+  È un cambiamento, quindi rientra nella regola. Se non ti interessa:
+  `"notify_on_gone": false`.
+* ⚠️ **Non riesce a leggere il sito** — se un controllo fallisce del tutto. Al
+  massimo uno ogni 6 ore (`failure_alert_hours`). Questo non è un cambiamento di
+  posti, ma serve: senza, un monitor rotto e un monitor che non ha niente da
+  dire sarebbero indistinguibili, perché entrambi tacciono.
 
-Nessun messaggio doppio: lo stato di ogni zona è salvato in `state.json` e si
-avvisa solo sui **cambiamenti**. Le gallerie e gli altri settori vengono letti e
-registrati nel log, ma **non** generano notifiche (sono già in vendita).
+Zone sorvegliate: **Platea A, Platea B, Palchi, Balconata**. Le due gallerie
+vengono lette e registrate nel log, ma **non** generano notifiche: hanno
+disponibilità larga e cambiano continuamente.
 
-Gli avvisi di "posti liberi" suonano **sempre**, anche di notte. Solo i messaggi
-di servizio (riepilogo, posti spariti nelle ore notturne) arrivano silenziosi,
-secondo `quiet_hours`.
+Nessun messaggio doppio: l'ultimo valore di ogni zona è in `state.json` (sul PC)
+o `ci-state.json` (su GitHub), e il confronto è su quello.
+
+Gli avvisi suonano **sempre**, anche di notte. Solo l'avviso di esaurimento e
+quello di guasto arrivano silenziosi nelle ore di `quiet_hours`.
+
+### Com'è fatto il messaggio
+
+```
+🎟 Posti liberi
+dom 13/12, ore 15:30
+
+✅ Platea A: 3 posti  (erano 0)
+⚠️ Balconata: 1 posto  (era 0)
+      per 2 biglietti non basta
+
+👉 Vai alla pagina dei biglietti
+controllo delle 23:02
+```
+
+Titolo dello spettacolo e teatro non vengono ripetuti: sono gli stessi per tutte
+e sei le recite, quindi l'unica cosa che le distingue è giorno e ora.
 
 ---
 
@@ -108,14 +132,14 @@ secondo `quiet_hours`.
 
 | Campo | Significato |
 |---|---|
-| `zones_watch` | zone sorvegliate. Confronto per sottostringa: `"PLATEA"` copre A e B insieme. Aggiungi `"PALCHI"` o `"BALCONATA"` se ti interessano |
-| `min_seats` | quanti posti ti servono: 2. Serve solo a marcare il messaggio, non a filtrarlo |
+| `zones_watch` | zone sorvegliate: Platea A, Platea B, Palchi, Balconata. Confronto per sottostringa, quindi `"PLATEA"` da solo coprirebbe A e B insieme. Le gallerie sono escluse di proposito |
+| `min_seats` | quanti posti ti servono: 2. Non filtra i messaggi, li marca: con 1 solo posto l'avviso arriva ma dice che non basta |
 | `interval_seconds` | 180 = un controllo ogni 3 minuti |
 | `jitter_seconds` | 60 = aggiunge 0–60 s casuali, così le richieste non sono a orologeria |
-| `repeat_minutes` | ogni quanto ripetere il promemoria se i posti restano |
+| `repeat_minutes` | **0 = disattivato** (nessun promemoria). Un valore >0 ripete l'avviso ogni N minuti finche' i posti restano liberi |
 | `notify_on_gone` | avvisare anche quando i posti vengono ripresi |
-| `heartbeat_hours` | ogni quanto il riepilogo "sono vivo" |
-| `quiet_hours` | `[1, 7]` = fra l'1 e le 7 i messaggi di servizio sono silenziosi |
+| `heartbeat_hours` | **0 = disattivato** (nessun riepilogo periodico). Un valore >0 manda ogni N ore un "Monitor attivo" silenzioso |
+| `quiet_hours` | `[1, 7]` = fra l'1 e le 7 gli avvisi di esaurimento e di guasto arrivano silenziosi. I posti liberi suonano sempre |
 | `headless` | `false` apre una finestra Chromium visibile, utile se qualcosa non va |
 | `events` | le recite. Si rigenerano con `python monitor_arena.py discover` |
 | `show_filter` | lo spettacolo da cercare con `discover` |

@@ -52,6 +52,7 @@ jobs:
           MONITOR_CONFIG: config.ci.json
           MONITOR_STATE: ci-state.json
           MONITOR_LOG: ci-monitor.log
+          TZ: Europe/Rome
         run: python monitor_arena.py once
 
       - name: Salva lo stato nel repository

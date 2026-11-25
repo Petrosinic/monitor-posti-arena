@@ -4,3 +4,4 @@ state.json
 monitor.log
 __pycache__/
 *.pyc
+ci-monitor.log

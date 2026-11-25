@@ -585,33 +585,64 @@ def buy_link(cfg: dict, pcode: str) -> str:
     return BUY_URL.format(pcode=pcode, tcode=cfg["tcode"])
 
 
+WHEN_RE = re.compile(r"(\w{3})\s+(\d{2})/(\d{2})/\d{4}\s+(\d{1,2}[:.]\d{2})")
+
+
+def short_when(event: dict) -> str:
+    """Tiene solo giorno e ora dal nome della recita, perche' titolo e teatro
+    sono gli stessi per tutte e ripeterli allunga il messaggio per niente:
+    'Il Lago Dei Cigni - dom 13/12/2026 15:30 - Teatro Filarmonico'
+      ->  'dom 13/12, ore 15:30'"""
+    m = WHEN_RE.search(event.get("label", ""))
+    if not m:
+        return event.get("label") or event.get("pcode", "")
+    giorno, gg, mm, ora = m.groups()
+    return "%s %s/%s, ore %s" % (giorno, gg, mm, ora.replace(".", ":"))
+
+
+def zone_name(zone: str) -> str:
+    """PLATEA A -> Platea A, BALCONATA -> Balconata"""
+    return " ".join(w if w.isdigit() else w.capitalize() for w in zone.split())
+
+
+def zone_order(cfg: dict, zone: str) -> int:
+    """Ordina le zone come sono elencate in zones_watch, non alfabeticamente."""
+    for i, w in enumerate(cfg.get("zones_watch") or []):
+        if w.strip().upper() in zone:
+            return i
+    return 99
+
+
 def format_alert(cfg: dict, event: dict, changes: list, reminder: bool = False) -> str:
     gone = all(n == 0 for _, n, _ in changes)
+    quando = html.escape(short_when(event))
+    need = int(cfg["min_seats"])
+
     if gone:
-        icon, title = "❌", "POSTI SPARITI (ripresi da qualcun altro)"
+        lines = ["❌ <b>Posti esauriti di nuovo</b>", quando, ""]
     elif reminder:
-        icon, title = "\U0001F39F", "PROMEMORIA posti ancora liberi"
+        lines = ["\U0001F39F <b>Posti ancora liberi</b>", quando, ""]
     else:
-        icon, title = "\U0001F39F", "POSTI LIBERI"
-    lines = [icon + " <b>" + title + "</b>",
-             "<b>" + html.escape(event["label"]) + "</b>",
-             ""]
-    for zone, now, before in changes:
+        lines = ["\U0001F39F <b>Posti liberi</b>", quando, ""]
+
+    for zone, now, before in sorted(changes, key=lambda c: zone_order(cfg, c[0])):
+        nome = html.escape(zone_name(zone))
         if now == 0:
-            lines.append("✖ " + html.escape(zone) +
-                         ": nessun posto (prima erano " + str(before) + ")")
+            lines.append("✖ " + nome + ": nessun posto, erano " + str(before))
+        elif now >= need:
+            prima = "" if reminder else "  (erano " + str(before) + ")"
+            lines.append("✅ <b>" + nome + ": " + str(now) + " posti</b>" + prima)
         else:
-            flag = "✅" if now >= cfg["min_seats"] else "⚠️"
-            word = "posto" if now == 1 else "posti"
-            extra = "" if reminder else " (prima: " + str(before) + ")"
-            note = "" if now >= cfg["min_seats"] else " — meno di " + str(cfg["min_seats"])
-            lines.append(flag + " <b>" + html.escape(zone) + ": " + str(now) + " " + word +
-                         "</b>" + extra + note)
+            parola = "posto" if now == 1 else "posti"
+            prima = "" if reminder else "  (era " + str(before) + ")"
+            lines.append("⚠️ " + nome + ": " + str(now) + " " + parola + prima +
+                         "\n      <i>per " + str(need) + " biglietti non basta</i>")
+
     lines.append("")
     if not gone:
         lines.append('\U0001F449 <a href="' + html.escape(buy_link(cfg, event["pcode"])) +
-                     '">Compra subito</a>')
-    lines.append("<i>" + format(datetime.now(), "%d/%m %H:%M:%S") + "</i>")
+                     '">Vai alla pagina dei biglietti</a>')
+    lines.append("<i>controllo delle " + format(datetime.now(), "%H:%M") + "</i>")
     return "\n".join(lines)
 
 
@@ -683,9 +714,9 @@ def run_cycle(shop: Shop, cfg: dict, state: dict, tg: Telegram, first_run: bool)
             for zone in cfg["zones_watch"]:
                 key = event["pcode"] + "|" + zone.strip().upper()
                 if key in zstate:
-                    vals.append(zone + ": " + str(zstate[key]["avail"]))
-            rows.append("• " + html.escape(event.get("label", event["pcode"])) +
-                        "\n   " + (", ".join(vals) or "n/d"))
+                    vals.append(zone_name(zone) + ": " + str(zstate[key]["avail"]))
+            rows.append("• <b>" + html.escape(short_when(event)) + "</b>\n   " +
+                        (", ".join(vals) or "n/d"))
         if tg.send("\U0001F7E2 <b>Monitor attivo</b>\n\n" + "\n".join(rows), silent=True):
             state["last_heartbeat"] = now_ts
             save_state(state)
