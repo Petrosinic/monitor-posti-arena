@@ -183,7 +183,56 @@ run manuale, ed è il primo passo della guida.
 
 ---
 
-## 7. Partire da sola all'accensione del PC
+## 7. Controllo automatico a PC acceso (Utilità di pianificazione)
+
+L'alternativa a GitHub: Windows lancia il controllo ogni 10 minuti **mentre il
+PC è acceso**. Non sveglia il computer e non lo tiene sveglio; a PC spento o in
+sospensione non controlla niente e riprende da solo al rientro.
+
+Si configura con lo script già pronto in questa cartella:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File ".\Crea attivita pianificata.ps1"
+```
+
+Crea un'attività chiamata **Monitor posti Arena** così configurata:
+
+| Voce | Valore | Perché |
+|---|---|---|
+| Programma | `pythonw.exe` | la variante di Python che **non apre nessuna finestra** |
+| Argomenti | `monitor_arena.py once` | un solo controllo e poi esce: nessun processo che resta in piedi |
+| Avvio | all'accesso a Windows, poi ogni 10 minuti | «a PC acceso» nel modo più semplice |
+| Istanze multiple | *ignora la nuova* | mai due controlli sovrapposti |
+| Avvia appena possibile | sì | se il PC era spento all'orario previsto, recupera al riavvio |
+| Batteria | consentito | funziona anche scollegato |
+| Limite di esecuzione | 5 minuti | un controllo bloccato viene interrotto invece di restare appeso |
+
+Un controllo dura circa 35 secondi, quindi 10 minuti di intervallo lasciano
+margine abbondante. Per cambiarlo: `-Minuti 5`. Per disattivare tutto:
+`-Rimuovi`.
+
+### Perché `once` e non `watch`
+
+`watch` è un processo unico che resta vivo e cicla da solo: va bene se lo lanci
+a mano e tieni la finestra aperta. Per l'automatismo è peggio — se si pianta
+resta piantato in silenzio, e serve una finestra o un processo nascosto da
+gestire. Con `once` ogni controllo è un processo nuovo che nasce, fa il suo
+lavoro e muore: se uno fallisce, il successivo riparte pulito dieci minuti dopo.
+È Windows a fare da ciclo, ed è più affidabile di qualsiasi ciclo scritto da me.
+
+### Non tenerlo acceso insieme a GitHub
+
+Hanno memorie separate (`state.json` sul PC, `ci-state.json` su GitHub), quindi
+riceveresti ogni avviso due volte. Se attivi questo, disattiva il workflow:
+Actions → *Monitor posti Lago dei Cigni* → `...` → *Disable workflow*.
+
+---
+
+## 8. Alternativa manuale: la cartella Esecuzione automatica
+
+Più rudimentale dell'attività pianificata qui sopra, e peggiore: lancia
+`watch`, cioè un processo che resta in piedi, con la finestra nera aperta.
+Serve solo se per qualche motivo l'Utilità di pianificazione non è usabile.
 
 1. `Win + R` → `shell:startup` → Invio
 2. Trascina dentro **`3 - Avvia monitor.bat`** tenendo premuto `ALT`
@@ -194,7 +243,7 @@ il PC acceso — se lo spegni la notte, in quelle ore non controlla nulla.
 
 ---
 
-## 8. Situazione al 25 novembre 2026
+## 9. Situazione al 25 novembre 2026
 
 | Recita | Platea A | Platea B | 1ª Gall. | 2ª Gall. |
 |---|---|---|---|---|
@@ -216,7 +265,7 @@ Due cose utili subito:
 
 ---
 
-## 9. File prodotti
+## 10. File prodotti
 
 * `monitor.log` — storico di tutti i controlli, con la disponibilità vista ogni
   volta. Utile per capire *quando* si liberano i posti.
@@ -227,7 +276,7 @@ Due cose utili subito:
 
 ---
 
-## 10. Requisiti (già installati su questo PC)
+## 11. Requisiti (già installati su questo PC)
 
 * Python 3.14
 * `requests`
@@ -241,7 +290,7 @@ python -m pip install requests playwright; python -m playwright install chromium
 
 ---
 
-## 11. Avvertenze
+## 12. Avvertenze
 
 * Il programma **non compra** niente: legge la disponibilità e ti avvisa.
   L'acquisto lo fai tu dal link nel messaggio, con il tuo account.
