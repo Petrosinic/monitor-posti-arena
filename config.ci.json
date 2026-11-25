@@ -1,0 +1,32 @@
+{
+  "_commento": "Configurazione usata da GitHub Actions. NON mettere qui token o chat_id: arrivano dai Secrets del repository come variabili d'ambiente.",
+
+  "telegram": {
+    "bot_token": "",
+    "chat_id": ""
+  },
+
+  "tcode": "vt0020008",
+  "operator": "arenaverona",
+  "show_filter": "Il Lago Dei Cigni",
+
+  "zones_watch": ["PLATEA A", "PLATEA B"],
+  "min_seats": 2,
+
+  "repeat_minutes": 45,
+  "notify_on_gone": true,
+  "heartbeat_hours": 24,
+  "failure_alert_hours": 6,
+  "quiet_hours": [1, 7],
+
+  "headless": true,
+
+  "events": [
+    { "pcode": "13134434", "label": "Il Lago Dei Cigni - dom 13/12/2026 15:30 - Teatro Filarmonico" },
+    { "pcode": "13134436", "label": "Il Lago Dei Cigni - mer 16/12/2026 19:00 - Teatro Filarmonico" },
+    { "pcode": "13134437", "label": "Il Lago Dei Cigni - ven 18/12/2026 20:00 - Teatro Filarmonico" },
+    { "pcode": "13862042", "label": "Il Lago Dei Cigni - sab 19/12/2026 15:30 - Teatro Filarmonico" },
+    { "pcode": "13134435", "label": "Il Lago Dei Cigni - dom 20/12/2026 15:30 - Teatro Filarmonico" },
+    { "pcode": "13862043", "label": "Il Lago Dei Cigni - gio 31/12/2026 19:30 - Teatro Filarmonico" }
+  ]
+}

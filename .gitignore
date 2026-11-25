@@ -1,0 +1,6 @@
+# file locali: non vanno nel repository
+config.json
+state.json
+monitor.log
+__pycache__/
+*.pyc

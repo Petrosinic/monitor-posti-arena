@@ -1,0 +1,79 @@
+name: Monitor posti Lago dei Cigni
+
+on:
+  # Minuti sfasati rispetto a :00 / :15 / :30 / :45 perche' in quegli istanti
+  # GitHub e' piu' carico e il cron parte in ritardo.
+  schedule:
+    - cron: "2,17,32,47 * * * *"
+  # Permette di lanciarlo a mano dalla scheda Actions
+  workflow_dispatch:
+
+# Serve per ricommittare lo stato (altrimenti ogni run ripartirebbe da zero
+# e riavviserebbe sempre le stesse cose)
+permissions:
+  contents: write
+
+# Mai due controlli insieme: si pesterebbero i piedi sul push dello stato
+concurrency:
+  group: monitor-posti
+  cancel-in-progress: false
+
+jobs:
+  controllo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Scarica il repository
+        uses: actions/checkout@v4
+
+      - name: Prepara Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Riusa il browser scaricato la volta prima
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+
+      - name: Installa le dipendenze
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m playwright install --with-deps chromium
+
+      - name: Controlla la disponibilita'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          MONITOR_CONFIG: config.ci.json
+          MONITOR_STATE: ci-state.json
+          MONITOR_LOG: ci-monitor.log
+        run: python monitor_arena.py once
+
+      - name: Salva lo stato nel repository
+        if: always()
+        run: |
+          if [ -n "$(git status --porcelain ci-state.json)" ]; then
+            git config user.name "monitor-posti"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add ci-state.json
+            git commit -m "stato posti $(date -u '+%Y-%m-%d %H:%M UTC')"
+            # un altro run potrebbe aver committato nel frattempo
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          else
+            echo "Nessun cambiamento nello stato, niente da committare."
+          fi
+
+      - name: Allega il log del controllo
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: log-${{ github.run_number }}
+          path: ci-monitor.log
+          if-no-files-found: ignore
+          retention-days: 7
