@@ -201,7 +201,7 @@ Crea un'attività chiamata **Monitor posti Arena** così configurata:
 |---|---|---|
 | Programma | `pythonw.exe` | la variante di Python che **non apre nessuna finestra** |
 | Argomenti | `monitor_arena.py once` | un solo controllo e poi esce: nessun processo che resta in piedi |
-| Avvio | all'accesso a Windows, poi ogni 10 minuti | «a PC acceso» nel modo più semplice |
+| Avvio | ogni 10 minuti tutto il giorno, più uno all'accesso | due trigger, vedi sotto |
 | Istanze multiple | *ignora la nuova* | mai due controlli sovrapposti |
 | Avvia appena possibile | sì | se il PC era spento all'orario previsto, recupera al riavvio |
 | Batteria | consentito | funziona anche scollegato |
@@ -210,6 +210,21 @@ Crea un'attività chiamata **Monitor posti Arena** così configurata:
 Un controllo dura circa 35 secondi, quindi 10 minuti di intervallo lasciano
 margine abbondante. Per cambiarlo: `-Minuti 5`. Per disattivare tutto:
 `-Rimuovi`.
+
+### Perché due trigger e non uno
+
+La ripetizione di un trigger parte quando quel trigger **scatta**. Attaccarla al
+solo trigger «all'accesso» sembra giusto e non lo è: se registri l'attività
+mentre sei già loggato, l'accesso è già avvenuto, il trigger non scatterà fino
+al prossimo riavvio, e nel frattempo non gira niente. L'attività risulta
+regolarmente creata e abilitata, ma non fa nulla.
+
+Si riconosce da un dettaglio: `Get-ScheduledTaskInfo` mostra **«prossimo avvio»
+vuoto**. Lo script lo controlla da solo e protesta se succede.
+
+Quindi: un trigger **giornaliero** che si riarma ogni giorno e ripete per 24 ore
+garantisce la copertura continua; quello **all'accesso** serve solo a fare un
+controllo subito dopo il login invece di aspettare fino a dieci minuti.
 
 ### Perché `once` e non `watch`
 
