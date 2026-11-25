@@ -55,20 +55,48 @@ jobs:
           TZ: Europe/Rome
         run: python monitor_arena.py once
 
+      # Lo stato appena calcolato viene riportato sempre sull'ULTIMA versione del
+      # branch, non rebasato sopra. Il rebase falliva quando il commit da
+      # riportare aggiungeva ci-state.json e il branch ce l'aveva gia': git lo
+      # vede come "both added" e si ferma in conflitto. Succede a ogni "Re-run"
+      # di un run vecchio, perche' rimette in gioco un commit precedente alla
+      # nascita del file. Qui invece si riparte dal remoto e vince il file nuovo,
+      # che e' quello appena letto dal sito: conflitti impossibili.
       - name: Salva lo stato nel repository
         if: always()
         run: |
-          if [ -n "$(git status --porcelain ci-state.json)" ]; then
-            git config user.name "monitor-posti"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add ci-state.json
-            git commit -m "stato posti $(date -u '+%Y-%m-%d %H:%M UTC')"
-            # un altro run potrebbe aver committato nel frattempo
-            git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
-            git push origin "HEAD:${GITHUB_REF_NAME}"
-          else
-            echo "Nessun cambiamento nello stato, niente da committare."
+          set -e
+          if [ ! -f ci-state.json ]; then
+            echo "Nessuno stato da salvare (il controllo non e' arrivato a scriverlo)."
+            exit 0
           fi
+          cp ci-state.json "${RUNNER_TEMP}/ci-state.nuovo.json"
+          git config user.name "monitor-posti"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          for tentativo in 1 2 3; do
+            git fetch -q origin "${GITHUB_REF_NAME}"
+            rm -f ci-state.json
+            git checkout -q -B salvataggio "origin/${GITHUB_REF_NAME}"
+            cp "${RUNNER_TEMP}/ci-state.nuovo.json" ci-state.json
+
+            if [ -z "$(git status --porcelain ci-state.json)" ]; then
+              echo "Stato invariato rispetto al repository, niente da committare."
+              exit 0
+            fi
+
+            git add ci-state.json
+            git commit -q -m "stato posti $(date -u '+%Y-%m-%d %H:%M UTC')"
+            if git push -q origin "HEAD:${GITHUB_REF_NAME}"; then
+              echo "Stato salvato al tentativo ${tentativo}."
+              exit 0
+            fi
+            echo "Push rifiutato: qualcuno ha scritto nel frattempo. Riprovo."
+            sleep 3
+          done
+
+          echo "Non sono riuscito a salvare lo stato dopo 3 tentativi."
+          exit 1
 
       - name: Allega il log del controllo
         if: always()
