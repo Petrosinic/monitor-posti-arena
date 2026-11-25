@@ -1,0 +1,65 @@
+{
+  "zones": {
+    "13134434|PLATEA A": {
+      "avail": 0,
+      "seen_at": 1795643629.8162143,
+      "notified_at": 0.0
+    },
+    "13134434|PLATEA B": {
+      "avail": 0,
+      "seen_at": 1795643629.8162143,
+      "notified_at": 0.0
+    },
+    "13134436|PLATEA B": {
+      "avail": 1,
+      "seen_at": 1795643629.8162143,
+      "notified_at": 0.0
+    },
+    "13134436|PLATEA A": {
+      "avail": 0,
+      "seen_at": 1795643629.8162143,
+      "notified_at": 0.0
+    },
+    "13134437|PLATEA A": {
+      "avail": 0,
+      "seen_at": 1795643629.8162143,
+      "notified_at": 0.0
+    },
+    "13134437|PLATEA B": {
+      "avail": 0,
+      "seen_at": 1795643629.8162143,
+      "notified_at": 0.0
+    },
+    "13862042|PLATEA A": {
+      "avail": 0,
+      "seen_at": 1795643629.8162143,
+      "notified_at": 0.0
+    },
+    "13862042|PLATEA B": {
+      "avail": 0,
+      "seen_at": 1795643629.8162143,
+      "notified_at": 0.0
+    },
+    "13134435|PLATEA A": {
+      "avail": 0,
+      "seen_at": 1795643629.8162143,
+      "notified_at": 0.0
+    },
+    "13134435|PLATEA B": {
+      "avail": 0,
+      "seen_at": 1795643629.8162143,
+      "notified_at": 0.0
+    },
+    "13862043|PLATEA A": {
+      "avail": 70,
+      "seen_at": 1795643629.8162143,
+      "notified_at": 0.0
+    },
+    "13862043|PLATEA B": {
+      "avail": 109,
+      "seen_at": 1795643629.8162143,
+      "notified_at": 0.0
+    }
+  },
+  "last_heartbeat": 1795643629.8162143
+}
