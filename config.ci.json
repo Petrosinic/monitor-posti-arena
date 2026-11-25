@@ -15,7 +15,7 @@
   ],
   "min_seats": 2,
   "repeat_minutes": 0,
-  "notify_on_gone": true,
+  "notify_on_gone": false,
   "heartbeat_hours": 0,
   "failure_alert_hours": 6,
   "quiet_hours": [

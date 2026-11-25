@@ -98,7 +98,7 @@ DEFAULTS = {
     "interval_seconds": 180,
     "jitter_seconds": 60,
     "repeat_minutes": 45,
-    "notify_on_gone": True,
+    "notify_on_gone": False,   # una diminuzione = acquisti altrui, non una notizia
     "heartbeat_hours": 12,
     "failure_alert_hours": 6,
     "quiet_hours": [1, 7],
@@ -679,10 +679,14 @@ def run_cycle(shop: Shop, cfg: dict, state: dict, tg: Telegram, first_run: bool)
                 # tranne se i posti ci sono gia' e non siamo al primissimo avvio
                 if avail > 0 and not first_run:
                     changes.append((zone, avail, 0))
-            elif avail != before:
-                if avail > 0:
-                    changes.append((zone, avail, before))
-                elif cfg.get("notify_on_gone"):
+            elif avail > before:
+                # Solo gli AUMENTI sono una notizia: sono posti che si liberano.
+                changes.append((zone, avail, before))
+            elif avail < before:
+                # Diminuzione: qualcuno ha comprato. Non e' una notizia utile e
+                # non serve a decidere niente, quindi di norma si tace.
+                # notify_on_gone (normalmente false) riapre il caso "azzerati".
+                if avail == 0 and cfg.get("notify_on_gone"):
                     changes.append((zone, 0, before))
             elif avail > 0 and cfg.get("repeat_minutes", 0) > 0 and last_notified > 0:
                 # last_notified > 0 e' indispensabile: un promemoria ripete un avviso,

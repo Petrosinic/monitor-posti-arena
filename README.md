@@ -81,21 +81,30 @@ python monitor_arena.py watch
 
 ## 4. Quando ti scrive (e quando no)
 
-**Regola unica: un messaggio arriva solo se fra un controllo e il precedente
-qualcosa è cambiato in una zona sorvegliata.** Niente promemoria, niente
-riepiloghi periodici, niente conferme che è vivo. Silenzio = nulla è cambiato.
+**Regola unica: un messaggio arriva solo se, fra un controllo e il precedente,
+i posti liberi in una zona sorvegliata sono AUMENTATI.** Nient'altro. Niente
+promemoria, niente riepiloghi periodici, niente conferme che è vivo.
 
-* 🎟 **Posti liberi** — una zona sorvegliata passa da 0 a >0, oppure il numero
-  cambia. Il messaggio dice giorno, ora, zona, quantità, il valore precedente,
-  e ha il link alla pagina dei biglietti.
+Il confronto è fra il numero di adesso e quello del controllo precedente:
+
+| Prima | Adesso | Cosa significa | Messaggio |
+|---|---|---|---|
+| 0 | 2 | si sono liberati due posti | **sì** |
+| 2 | 5 | se ne sono liberati altri tre | **sì** |
+| 5 | 3 | qualcuno ne ha comprati due | no |
+| 3 | 0 | comprati tutti, di nuovo esaurito | no |
+| 1 | 1 | non è successo niente | no |
+
+Le diminuzioni non vengono segnalate di proposito: significano che altri hanno
+acquistato, non c'è niente da fare e non cambiano nessuna tua decisione.
+
+* 🎟 **Posti liberi** — l'unico avviso ordinario. Dice giorno, ora, zona,
+  quantità, il valore precedente, e ha il link alla pagina dei biglietti.
 * ⚠️ Se i posti liberi sono **meno di 2** (`min_seats`) il messaggio arriva
   comunque, marcato *«per 2 biglietti non basta»*: spesso i posti si liberano
   uno alla volta, e il secondo può arrivare poco dopo.
-* ❌ **Posti esauriti di nuovo** — tornano a 0 perché li ha presi qualcun altro.
-  È un cambiamento, quindi rientra nella regola. Se non ti interessa:
-  `"notify_on_gone": false`.
 * ⚠️ **Non riesce a leggere il sito** — se un controllo fallisce del tutto. Al
-  massimo uno ogni 6 ore (`failure_alert_hours`). Questo non è un cambiamento di
+  massimo uno ogni 6 ore (`failure_alert_hours`). Questo non è un aumento di
   posti, ma serve: senza, un monitor rotto e un monitor che non ha niente da
   dire sarebbero indistinguibili, perché entrambi tacciono.
 
@@ -106,8 +115,9 @@ disponibilità larga e cambiano continuamente.
 Nessun messaggio doppio: l'ultimo valore di ogni zona è in `state.json` (sul PC)
 o `ci-state.json` (su GitHub), e il confronto è su quello.
 
-Gli avvisi suonano **sempre**, anche di notte. Solo l'avviso di esaurimento e
-quello di guasto arrivano silenziosi nelle ore di `quiet_hours`.
+Gli avvisi di posti liberi suonano **sempre**, anche di notte: sono l'unica
+ragione per cui il monitor esiste. Solo l'avviso di guasto arriva silenzioso
+nelle ore di `quiet_hours`.
 
 ### Com'è fatto il messaggio
 
@@ -123,6 +133,9 @@ dom 13/12, ore 15:30
 controllo delle 23:02
 ```
 
+Il «(erano 0)» è il numero del controllo precedente: serve a capire a colpo
+d'occhio quanti se ne sono liberati adesso.
+
 Titolo dello spettacolo e teatro non vengono ripetuti: sono gli stessi per tutte
 e sei le recite, quindi l'unica cosa che le distingue è giorno e ora.
 
@@ -137,7 +150,7 @@ e sei le recite, quindi l'unica cosa che le distingue è giorno e ora.
 | `interval_seconds` | 180 = un controllo ogni 3 minuti |
 | `jitter_seconds` | 60 = aggiunge 0–60 s casuali, così le richieste non sono a orologeria |
 | `repeat_minutes` | **0 = disattivato** (nessun promemoria). Un valore >0 ripete l'avviso ogni N minuti finche' i posti restano liberi |
-| `notify_on_gone` | avvisare anche quando i posti vengono ripresi |
+| `notify_on_gone` | **false**: le diminuzioni non si segnalano. A `true` riceveresti un avviso quando una zona torna a zero, rompendo la regola dei soli aumenti |
 | `heartbeat_hours` | **0 = disattivato** (nessun riepilogo periodico). Un valore >0 manda ogni N ore un "Monitor attivo" silenzioso |
 | `quiet_hours` | `[1, 7]` = fra l'1 e le 7 gli avvisi di esaurimento e di guasto arrivano silenziosi. I posti liberi suonano sempre |
 | `headless` | `false` apre una finestra Chromium visibile, utile se qualcosa non va |
