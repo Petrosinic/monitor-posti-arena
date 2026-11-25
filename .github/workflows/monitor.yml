@@ -1,10 +1,12 @@
 name: Monitor posti Lago dei Cigni
 
 on:
-  # Minuti sfasati rispetto a :00 / :15 / :30 / :45 perche' in quegli istanti
-  # GitHub e' piu' carico e il cron parte in ritardo.
   schedule:
-    - cron: "2,17,32,47 * * * *"
+    # Forma piu' semplice possibile. Prima era "2,17,32,47 * * * *", sfasata di
+    # proposito per evitare i minuti di punta: valida, ma lo scheduler di GitHub
+    # non si e' mai acceso in un'ora e mezza. Questa e' l'espressione piu'
+    # comune che esista, cosi' una lista di minuti non e' piu' fra le variabili.
+    - cron: "*/15 * * * *"
   # Permette di lanciarlo a mano dalla scheda Actions
   workflow_dispatch:
 
