@@ -693,7 +693,17 @@ def run_cycle(shop: Shop, cfg: dict, state: dict, tg: Telegram, first_run: bool)
                 if now_ts - last_notified >= cfg["repeat_minutes"] * 60:
                     reminders.append((zone, avail, before))
 
-            zstate[key] = {"avail": avail, "seen_at": now_ts, "notified_at": last_notified}
+            # seen_at = da quando la disponibilita' e' questa, non "ultima lettura".
+            # Riscriverlo a ogni giro faceva cambiare il file anche quando non
+            # cambiava nulla: su GitHub significava un commit ogni controllo, 96 al
+            # giorno, e la cronologia del file diventava inservibile per capire
+            # quando i posti si sono liberati davvero.
+            invariata = before is not None and avail == before
+            zstate[key] = {
+                "avail": avail,
+                "seen_at": prev.get("seen_at", now_ts) if invariata else now_ts,
+                "notified_at": last_notified,
+            }
 
         for group, is_reminder in ((changes, False), (reminders, True)):
             if not group:

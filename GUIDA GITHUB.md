@@ -210,5 +210,6 @@ sul PC. Il PC lo tieni per i controlli a mano con `2 - Controllo singolo.bat`.
 | `Updates were rejected because the remote contains work` | il repository non era vuoto | cancellalo su GitHub e ricrealo senza README |
 | Run rosso allo step *"Salva lo stato"* | manca il permesso di scrittura | Settings → Actions → General → *Workflow permissions* → **Read and write permissions** |
 | Run verde ma nessun messaggio Telegram | Secrets sbagliati o con nome diverso | ricontrolla che si chiamino esattamente `TELEGRAM_BOT_TOKEN` e `TELEGRAM_CHAT_ID` |
-| I run si fermano dopo mesi | GitHub disattiva i cron nei repository inattivi da 60 giorni | qui non succede: ogni cambiamento di stato è un commit, quindi il repository resta attivo |
+| Run rosso dopo aver usato **Re-run jobs** | «Re-run» riesegue il *commit di allora*, non l'ultimo. Se quel commit è anteriore al file di stato, il salvataggio può fallire | non usare *Re-run jobs*: per un controllo a mano usa sempre **Run workflow** dalla pagina del workflow, che parte dall'ultima versione |
+| I run si fermano dopo mesi | GitHub disattiva i cron nei repository inattivi da 60 giorni | i commit di stato arrivano solo quando i posti cambiano davvero, quindi se restasse tutto immobile per due mesi il cron potrebbe essere sospeso. Per il tuo orizzonte (dicembre) non è un problema; basta un *Run workflow* ogni tanto per riattivarlo |
 | Notifiche doppie | gira sia su GitHub sia sul PC | chiudi la finestra nera sul PC |
