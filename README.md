@@ -177,6 +177,11 @@ I file sono già pronti: `.github/workflows/monitor.yml`, `config.ci.json`,
 
 **→ Procedura completa: [GUIDA GITHUB.md](GUIDA%20GITHUB.md)**
 
+Lo scheduler interno di GitHub si è rivelato molto discontinuo: un solo controllo
+programmato nelle prime dodici ore. Per renderlo puntuale c'è un servizio di cron
+esterno che chiama GitHub al posto suo —
+**[GUIDA CRON ESTERNO.md](GUIDA%20CRON%20ESTERNO.md)**.
+
 Avvertenza importante: lo shop è protetto da Imperva/Incapsula e non è detto che
 accetti le richieste dai datacenter di GitHub. Si verifica in due minuti con un
 run manuale, ed è il primo passo della guida.
