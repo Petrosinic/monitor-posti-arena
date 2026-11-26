@@ -1,11 +1,12 @@
 # Guida passo passo — far girare il monitor su GitHub, a PC spento
 
-GitHub esegue il controllo sui suoi server, gratis, mentre il tuo PC è spento.
+GitHub esegue il controllo sui suoi server, gratis, **24 ore su 24**, anche a PC
+spento. È l'unica copertura nei giorni in cui il PC non viene acceso.
 
-**Configurato per girare solo di notte**, dalle 23 alle 9 italiane, ogni 15
-minuti. Di giorno il controllo lo fa l'attività pianificata di Windows, ogni 10
-minuti e in modo affidabile: far girare anche questo significherebbe solo
-ricevere ogni avviso due volte, perché i due hanno memorie separate.
+Quando anche l'attività pianificata sul PC è attiva, lo stesso cambiamento può
+essere segnalato due volte: hanno memorie separate. Succede solo quando un posto
+si libera davvero, cioè l'evento che stai aspettando — meglio un avviso doppio
+che un avviso mancato.
 
 ---
 
@@ -135,8 +136,8 @@ Funziona. Clicca sul run, poi su **controllo**, poi apri lo step *"Controlla la
 disponibilita'"*: vedrai le 6 recite con i numeri, esattamente come sul tuo PC.
 Su Telegram ti arriva il riepilogo **🟢 Monitor attivo**.
 
-Da questo momento gira da solo ogni 15 minuti **nella fascia notturna**, a PC
-spento. Non devi fare più niente.
+Da questo momento gira da solo ogni 15 minuti, a PC spento. Non devi fare più
+niente.
 
 ### Se il pallino diventa rosso ❌
 
@@ -169,9 +170,9 @@ Nel repository, apri `.github/workflows/monitor.yml`, matita per modificare, e
 cambia la riga del cron:
 
 ```yaml
-    - cron: "*/15 22-23,0-7 * * *"   # ogni 15 min, solo di notte (attuale)
-    - cron: "*/15 * * * *"            # ogni 15 min, tutto il giorno
-    - cron: "*/5 22-23,0-7 * * *"     # ogni 5 min di notte: il minimo consentito
+    - cron: "*/15 * * * *"            # ogni 15 minuti, sempre (attuale)
+    - cron: "*/5 * * * *"             # ogni 5 minuti: il minimo consentito
+    - cron: "*/15 22-23,0-7 * * *"    # solo di notte, ore UTC (23-9 italiane)
 ```
 
 Le ore del cron sono in **UTC**: d'inverno l'Italia è un'ora avanti, quindi

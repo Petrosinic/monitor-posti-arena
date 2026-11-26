@@ -2,21 +2,20 @@ name: Monitor posti Lago dei Cigni
 
 on:
   schedule:
-    # SOLO DI NOTTE, dalle 23 alle 9 italiane (le ore del cron sono UTC).
+    # TUTTE LE ORE. Era stato ristretto alla sola notte per non avere avvisi
+    # doppi mentre girava anche l'attivita' pianificata sul PC, ma il PC non e'
+    # acceso tutti i giorni: nei fine settimana e nelle giornate fuori casa
+    # restava tutto scoperto. Meglio un avviso doppio che un avviso mancato.
     #
-    # Di giorno controlla l'attivita' pianificata sul PC, ogni 10 minuti e in
-    # modo affidabile. Far girare anche questo significherebbe solo ricevere
-    # ogni avviso due volte, perche' i due hanno memorie separate.
-    # Di notte il PC e' spento e questo e' l'unico controllo possibile.
+    # Quando il PC e' acceso i due possono entrambi segnalare lo stesso
+    # cambiamento, perche' hanno memorie separate (state.json contro
+    # ci-state.json). Succede solo quando un posto si libera davvero, cioe'
+    # l'evento che si sta aspettando: due messaggi invece di uno si tollerano.
     #
-    # Restringere la fascia non toglie nemmeno uno slot notturno: "*/15 22-23,0-7"
-    # ha, fra le 22 e le 7 UTC, esattamente gli stessi istanti di "*/15 * * * *".
-    # Si perdono solo gli slot diurni, che erano ridondanti.
-    #
-    # Nota sull'affidabilita': lo scheduler di GitHub e' molto discontinuo. Il
-    # primo run programmato e' arrivato sette ore dopo la pubblicazione, e poi
-    # tre ore di silenzio. Qui e' una rete di sicurezza, non una garanzia.
-    - cron: "*/15 22-23,0-7 * * *"
+    # Nota sull'affidabilita': lo scheduler di GitHub e' discontinuo. Il primo
+    # run programmato e' arrivato sette ore dopo la pubblicazione, e poi tre
+    # ore di silenzio. Questi slot sono il massimo possibile, non una garanzia.
+    - cron: "*/15 * * * *"
   # Permette di lanciarlo a mano dalla scheda Actions
   workflow_dispatch:
 
