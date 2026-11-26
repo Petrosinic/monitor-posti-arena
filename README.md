@@ -168,8 +168,9 @@ per il 13 dicembre lasciando le altre più lente.
 
 ## 6. Farlo girare a PC spento (GitHub Actions)
 
-Il monitor può girare sui server di GitHub ogni 15 minuti, gratis, senza che il
-tuo PC sia accesso. In quel caso non si usa `watch` ma il comando `once`, che
+Il monitor può girare sui server di GitHub, gratis, senza che il tuo PC sia
+acceso. **Qui è configurato solo per la notte**, dalle 23 alle 9: di giorno
+ci pensa l'attività pianificata sul PC (sezione 7), più affidabile. In quel caso non si usa `watch` ma il comando `once`, che
 fa un solo controllo e poi esce: la ripetizione la fa lo scheduler di GitHub.
 
 I file sono già pronti: `.github/workflows/monitor.yml`, `config.ci.json`,

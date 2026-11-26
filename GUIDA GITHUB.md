@@ -1,7 +1,11 @@
 # Guida passo passo — far girare il monitor su GitHub, a PC spento
 
-GitHub esegue il controllo sui suoi server, ogni 15 minuti, gratis. Il tuo PC
-può essere spento: le notifiche Telegram arrivano comunque.
+GitHub esegue il controllo sui suoi server, gratis, mentre il tuo PC è spento.
+
+**Configurato per girare solo di notte**, dalle 23 alle 9 italiane, ogni 15
+minuti. Di giorno il controllo lo fa l'attività pianificata di Windows, ogni 10
+minuti e in modo affidabile: far girare anche questo significherebbe solo
+ricevere ogni avviso due volte, perché i due hanno memorie separate.
 
 ---
 
@@ -131,8 +135,8 @@ Funziona. Clicca sul run, poi su **controllo**, poi apri lo step *"Controlla la
 disponibilita'"*: vedrai le 6 recite con i numeri, esattamente come sul tuo PC.
 Su Telegram ti arriva il riepilogo **🟢 Monitor attivo**.
 
-Da questo momento gira da solo ogni 15 minuti, a PC spento. Non devi fare più
-niente.
+Da questo momento gira da solo ogni 15 minuti **nella fascia notturna**, a PC
+spento. Non devi fare più niente.
 
 ### Se il pallino diventa rosso ❌
 
@@ -165,10 +169,13 @@ Nel repository, apri `.github/workflows/monitor.yml`, matita per modificare, e
 cambia la riga del cron:
 
 ```yaml
-    - cron: "2,17,32,47 * * * *"      # ogni 15 minuti (attuale)
-    - cron: "*/10 * * * *"            # ogni 10 minuti
-    - cron: "*/5 * * * *"             # ogni 5 minuti: il minimo consentito
+    - cron: "*/15 22-23,0-7 * * *"   # ogni 15 min, solo di notte (attuale)
+    - cron: "*/15 * * * *"            # ogni 15 min, tutto il giorno
+    - cron: "*/5 22-23,0-7 * * *"     # ogni 5 min di notte: il minimo consentito
 ```
+
+Le ore del cron sono in **UTC**: d'inverno l'Italia è un'ora avanti, quindi
+`22-23,0-7` significa dalle 23 alle 9 italiane.
 
 Tieni presente due cose: 5 minuti è il **minimo** che GitHub accetta, e il cron
 di GitHub **non è puntuale** — nei momenti di carico i run partono con qualche
