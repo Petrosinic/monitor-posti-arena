@@ -190,6 +190,14 @@ Apri `config.ci.json`, matita, e cambia:
   "zones_watch": ["PLATEA A", "PLATEA B", "PALCHI", "BALCONATA"],
 ```
 
+Vale per tutte le recite. Per sorvegliare settori diversi su **una sola** data,
+si aggiunge un `zones_watch` dentro la recita, che sostituisce quello generale:
+
+```json
+  { "pcode": "13134434", "label": "...13/12...",
+    "zones_watch": ["PLATEA A", "PLATEA B", "PALCHI", "BALCONATA", "GALLERIA"] }
+```
+
 ### Fermare tutto
 
 Scheda **Actions** → **Monitor posti Lago dei Cigni** → menù `...` in alto a

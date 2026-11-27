@@ -145,7 +145,8 @@ e sei le recite, quindi l'unica cosa che le distingue è giorno e ora.
 
 | Campo | Significato |
 |---|---|
-| `zones_watch` | zone sorvegliate: Platea A, Platea B, Palchi, Balconata. Confronto per sottostringa, quindi `"PLATEA"` da solo coprirebbe A e B insieme. Le gallerie sono escluse di proposito |
+| `zones_watch` | zone sorvegliate: Platea A, Platea B, Palchi, Balconata. Confronto per sottostringa, quindi `"PLATEA"` da solo coprirebbe A e B insieme. Le gallerie sono escluse di proposito, tranne dove una recita dice altrimenti (riga sotto) |
+| `events[].zones_watch` | elenco di settori valido **solo per quella recita**, al posto di quello generale. Il 13/12 è esaurito ovunque, quindi lì si sorvegliano anche le gallerie; sulle altre date ce ne sono decine libere e un aumento non sarebbe una notizia ma rumore |
 | `min_seats` | quanti posti ti servono: 2. Non filtra i messaggi, li marca: con 1 solo posto l'avviso arriva ma dice che non basta |
 | `interval_seconds` | 180 = un controllo ogni 3 minuti |
 | `jitter_seconds` | 60 = aggiunge 0–60 s casuali, così le richieste non sono a orologeria |

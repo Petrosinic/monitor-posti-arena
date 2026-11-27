@@ -26,7 +26,14 @@
   "events": [
     {
       "pcode": "13134434",
-      "label": "Il Lago Dei Cigni - dom 13/12/2026 15:30 - Teatro Filarmonico"
+      "label": "Il Lago Dei Cigni - dom 13/12/2026 15:30 - Teatro Filarmonico",
+      "zones_watch": [
+        "PLATEA A",
+        "PLATEA B",
+        "PALCHI",
+        "BALCONATA",
+        "GALLERIA"
+      ]
     },
     {
       "pcode": "13134436",

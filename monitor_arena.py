@@ -564,9 +564,17 @@ class Shop:
 # Logica di sorveglianza
 # --------------------------------------------------------------------------- #
 
-def watched_zones(cfg: dict, zones: dict) -> dict:
+def event_zones(cfg: dict, event: dict = None) -> list:
+    """I settori da sorvegliare per una recita: quelli suoi se li ha, altrimenti
+    quelli generali. Serve perche' le gallerie interessano solo dove non c'e'
+    piu' niente: sulle recite con decine di posti liberi un aumento in galleria
+    non e' una notizia, e' rumore."""
+    return (event or {}).get("zones_watch") or cfg["zones_watch"]
+
+
+def watched_zones(cfg: dict, zones: dict, event: dict = None) -> dict:
     """Filtra le zone da sorvegliare: confronto per sottostringa, senza maiuscole."""
-    wanted = [w.strip().upper() for w in cfg["zones_watch"] if w.strip()]
+    wanted = [w.strip().upper() for w in event_zones(cfg, event) if w.strip()]
     if not wanted:
         return dict(zones)
     return {name: n for name, n in zones.items() if any(w in name for w in wanted)}
@@ -662,7 +670,7 @@ def run_cycle(shop: Shop, cfg: dict, state: dict, tg: Telegram, first_run: bool)
             continue
         ok_count += 1
 
-        watch = watched_zones(cfg, zones)
+        watch = watched_zones(cfg, zones, event)
         summary = ", ".join(k + "=" + str(v) for k, v in sorted(watch.items()))
         log.info("%s | %s", event.get("label", pcode), summary or "nessuna zona sorvegliata")
 
@@ -730,7 +738,7 @@ def run_cycle(shop: Shop, cfg: dict, state: dict, tg: Telegram, first_run: bool)
         rows = []
         for event in cfg["events"]:
             vals = []
-            for zone in cfg["zones_watch"]:
+            for zone in event_zones(cfg, event):
                 key = event["pcode"] + "|" + zone.strip().upper()
                 if key in zstate:
                     vals.append(zone_name(zone) + ": " + str(zstate[key]["avail"]))
@@ -772,7 +780,7 @@ def cmd_check(cfg: dict) -> None:
             except Exception as exc:
                 print("  " + event["label"] + ": ERRORE " + str(exc))
                 continue
-            watch = watched_zones(cfg, zones)
+            watch = watched_zones(cfg, zones, event)
             flag = "   <<< POSTI LIBERI" if any(v >= cfg["min_seats"] for v in watch.values()) else ""
             print("  " + event["label"])
             print("     " + "   ".join(k + ": " + str(v) for k, v in sorted(zones.items())) + flag)
