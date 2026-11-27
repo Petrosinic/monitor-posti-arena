@@ -51,8 +51,8 @@
       "notified_at": 0.0
     },
     "13862043|PLATEA A": {
-      "avail": 66,
-      "seen_at": 1795775448.3298976,
+      "avail": 55,
+      "seen_at": 1795808381.8391228,
       "notified_at": 0.0
     },
     "13862043|PLATEA B": {
@@ -118,6 +118,16 @@
     "13862043|PALCHI": {
       "avail": 0,
       "seen_at": 1795645505.1888661,
+      "notified_at": 0.0
+    },
+    "13134434|1 GALLERIA": {
+      "avail": 0,
+      "seen_at": 1795808381.8391228,
+      "notified_at": 0.0
+    },
+    "13134434|2 GALLERIA": {
+      "avail": 0,
+      "seen_at": 1795808381.8391228,
       "notified_at": 0.0
     }
   },
